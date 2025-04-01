@@ -1,0 +1,404 @@
+---
+title: 'MSBR70200 Assignment: Random Sampling and Hypothesis Testing'
+author: "Chamroeun Chhay"
+date: "2024-09-24"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<br> 
+
+### Random Sampling 
+
+<br>
+
+#### 1. Exercise 4.2
+
+An insurance company would like to estimate the average amount claimed
+by its policyholders over the past year. A random sample of 300 policy-
+holders was chosen, whose observed sample mean was $739.98 and whose
+sample standard deviation was $312.70.
+
+a. Construct a 95% confidence interval for the average amount claimed by policy- holders in the last year.
+
+```{r}
+Xbar <- 739.98
+sigma <- 312.70
+n <- 300
+ci <- .95
+
+ci_diff <- (1 - ci)/2 
+
+a <- qnorm(ci_diff, 0, 1, F)
+
+low <- (Xbar - a * (sigma/sqrt(n)))
+high <- (Xbar + a * (sigma/sqrt(n)))
+
+c_intervals <- c(low, high)
+c_intervals
+
+```
+
+b. Construct a 99% confidence interval for the average amount claimed by policy-
+holders in the last year.
+
+```{r}
+Xbar <- 739.98
+sigma <- 312.70
+n <- 300
+ci <- .99
+
+ci_diff <- (1 - ci)/2 
+
+a <- qnorm(ci_diff, 0, 1, F)
+
+low <- (Xbar - a * (sigma/sqrt(n)))
+high <- (Xbar + a * (sigma/sqrt(n)))
+
+c_intervals <- c(low, high)
+c_intervals
+
+```
+
+c. Determine the required sample size in order to estimate the average amount
+claimed by policyholders to within $30.00 at the 95% confidence level.
+
+```{r}
+Xbar <- 739.98
+sigma <- 312.70
+ci <- .95
+ci_diff <- (1 - ci)/2 
+
+a <- qnorm(ci_diff, 0, 1, F)
+
+# 30 = a * (312.70/sqrt(n))
+# n = ((a * sigma)/30)^2
+
+sample_size <- ceiling(((a * sigma)/30)^2)
+sample_size
+# Sample size should be 418
+
+```
+
+
+d. (Challenge) The company’s primary concern is to avoid underestimating the average amount claimed by its policyholders. Determine a value b so that the in-
+surance company is 95% confident that the average amount claimed by its
+policyholders is b or less.
+
+```{r}
+Xbar <- 739.98
+sigma <- 312.70
+ci <- .95
+ci_diff <- (1 - ci)/2 
+
+# Find P(X <= .95) in normal distribution
+b <- qnorm(.95, 0, 1, T)
+
+Upper_bound <- ceiling(Xbar + b * (sigma/sqrt(n)))
+Upper_bound
+
+```
+
+
+#### 2. Exercise 4.10
+
+During a local election between two candidates, exit polls based
+on a sample of 400 voters indicated that 54% of the voters supported the incumbent
+candidate.
+
+a. Construct a 98% confidence interval for the percentage of votes that the incumbent has received in this election.
+
+```{r}
+pbar <- .54
+
+c <- qnorm(.99, 0, 1, T)
+
+c * sqrt((.54 * (1-.54))/400)
+
+low_p <- pbar - c * sqrt((.54 * (1-.54))/400)
+high_p <- pbar + c * sqrt((.54 * (1-.54))/400)
+
+vote_ci <- c(low_p, high_p)
+vote_ci
+
+```
+
+b. How large a sample is required in order to declare the incumbent candidate a
+winner at the 99% confidence level?
+
+```{r}
+d <- qnorm(.995, 0, 1, T)
+
+#  Since the incumbent candidate only need 50% or .5 to win the election, the margin on error from 54% or .54 is 4% or .04 
+
+# .04 = d * sqrt(p_bar *(1-p_bar)/n)
+
+sample_n <- ceiling((pbar * (1-pbar))/((.04/d)^2))
+sample_n
+
+```
+
+#### 2. Exercise 4.18
+
+Daily Express Airlines is concerned about the occupancy levels
+and the on-time performance of their flights.
+
+a. To estimate the occupancy level of their flights, the airline has randomly sampled 20 of its flights. The observed sample mean in the sample is 8.1 unoccupied seats per flight and the observed sample standard deviation is 3.9 unoccupied seats per flight. Construct a 99% confidence interval for the mean number of unoccupied seats per flight.
+
+```{r}
+# Since the smaple size is on the smaller end, I will use t-distribution 
+Xbar <- 8.1
+sigma <- 3.9
+n <- 20
+e <- qt(.995, n-1, 0, T)
+
+low <- (Xbar - e * (sigma/sqrt(n)))
+high <- (Xbar + e * (sigma/sqrt(n)))
+
+cf_in <- c(low, high)
+cf_in
+
+```
+
+b. To estimate the length of delays in flights, the airline has randomly sampled 80 of its flights. The observed sample mean is 15.5 minutes of delay per flight, and the observed sample standard deviation is 6.7 minutes. Construct a 95% confidence interval for the mean delay per flight. 
+
+```{r}
+Xbar <- 15.5
+sigma <- 6.7
+n <- 80
+ci <- .95
+
+ci_diff <- (1 - ci)/2 
+
+a <- qnorm(ci_diff, 0, 1, F)
+
+low <- (Xbar - a * (sigma/sqrt(n)))
+high <- (Xbar + a * (sigma/sqrt(n)))
+
+flight_ci <- c(low, high)
+flight_ci
+```
+
+
+c. How many flights should the airline sample in order to estimate the mean delay per flight to within 1 minute at the 99% confidence level?
+
+```{r}
+Xbar <- 15.5
+sigma <- 6.7
+n <- 80
+ci <- .99
+ci_diff <- (1 - ci)/2 
+
+f <- qnorm(ci_diff, 0, 1, F)
+
+# The interval length between the lower bound and the upper bound is 2 min 
+# 2 = (Xbar + f * sigma/sqrt(n)) - (CXbar - f * sigma/sqrt(n))
+# 2 = f * sigma/sqrt(n)
+new_n <- ceiling((f * sigma)^2)
+
+new_n
+```
+
+
+d. A very important statistic in understanding customer satisfaction in the airline industry is the fraction of flights that arrive on time. In the sample of 80 flights (part (b)), 60 flights arrived on time, while 20 experienced some delay. Construct a 95% confidence interval for the proportion of flights that arrive on time.
+
+```{r}
+# Total flight 80, 60 on time. (60/80) = .75
+n <- 80
+pbar <- .75 
+ci <- .95
+sigma <- sqrt((pbar * (1-pbar)))
+g <- qnorm(.975, 0, 1, T)
+
+low <- pbar - g * sigma / sqrt(n)
+high <- pbar + g * sigma / sqrt(n)
+
+on_time <- c(low, high)
+on_time
+```
+
+e. How many flights should the airline sample in order to predict the proportion of flights that arrive on time to within 2%, at the 95% confidence level?
+
+```{r}
+n <- 80
+pbar <- .75 
+ci <- .95
+p_left <- (1-ci)/2
+h <- qnorm(p_left, 0, 1, F)
+new_n <- ceiling(((h * sigma/0.04)*2)^2)
+new_n
+
+```
+
+
+#### 2. Exercise 4.20
+It is estimated that there are 117 million “TV homes” in the United
+States. Most media research organizations use only 5,000 TV homes to collect infor-
+mation on television viewership patterns. In the language of media research, a tele-
+vision show “rating” measures the percentage of the nation’s 117 million TV homes
+that have watched a particular television program. Thus, for example, if a program
+has a rating of 27, this means that 27% of all TV homes watched the program.
+
+a. A popular television program received a rating of 20 on a particular evening
+based on a sample of 5,000 TV homes. Construct a 99% confidence interval for the
+actual percentage of all TV homes that were watching this television program.
+
+```{r}
+n <- 5000
+p_hat <- .2 
+sigma <- sqrt((p_hat * (1-p_hat)))
+ci <- .99
+
+g <- qnorm(.995, 0, 1, T)
+
+low <- p_hat - g * sigma / sqrt(n)
+high <- p_hat + g * sigma / sqrt(n)
+
+tv_inter <- c(low, high)
+tv_inter
+
+```
+
+b. Suppose a television network would like to estimate the ratings of a new show.
+The network executives would like to obtain a 95% confidence interval whose
+tolerance level is within 2 rating points. Calculate the size of the sample required
+to obtain such an estimate.
+
+```{r}
+n <- 5000
+p_hat <- .5
+sigma <- sqrt((p_hat * (1-p_hat)))
+ci <- .95
+
+d <- qnorm(.975, 0, 1, T)
+d
+new_n <- ceiling(((d * sigma/0.04)*2)^2)
+new_n
+
+```
+
+### Hypothesis Testing 
+
+Mendoza Insurance company has recently come under increased pressure to improve its operation as the investment side of its business has not been performing well. One of their greatest concerns has been fraudulent claims.
+
+Even worse, the company’s business analytics specialist was recently poached by one of its competitors who offered her quite a lucrative salary/benefits package. She relocated and started with them three months ago. The company realizes it cannot hire such a valuable expert quickly, and has contacted you to get advice on some key decisions.
+
+You have been given access to a random sample of 4,415 of their claims data in 2008. This can be found in the file: insurance.rda. Mendoza Insurance is eagerly awaiting your recommendations.
+
+For the following, please use 1% significance level, i.e., 𝛼=1%. To get the full credits, you should show either your code or your analysis.
+
+```{r}
+load('~/Desktop/Statistical Analysis/insurance.rda')
+```
+
+#### 5. Should Mendoza Insurance raise premiums this year?
+
+Under Mendoza Insurance policy guidelines, a policy premium increase is merited if the average claim amount has increased by at least 5% over the previous year. The accounting department has reported that the average claim amount in 2007 was $63,500.
+Note: The claim_amount variable in the dataset is reported in $1,000’s of dollars.
+
+a. Make sure to clearly describe your null and alternative hypotheses. (Hint: Think about when the firm would take an action to increase a policy premium.)
+
+```{r}
+# mu in 2007 = $63,500: 2008's mu increased from 2007 
+mu <- 63500 * 1.05
+mu
+```
+
+-   The null hypothesis: $H_0$ mu <= $66,675 
+-   The alternative hypothesis: $H_a$ mu > $66,675 
+
+
+b. Conduct hypothesis testing and report the result.
+
+```{r}
+claim <- t.test(x = insurance$claim_amount * 1000, mu = 66675, alternative = 'greater', conf.level = .99)
+claim
+```
+
+c. Would you order a reevaluation of the policy premiums for a premium increase based on your result? Why or why not?
+
+Since p-value is less than $\alpha=1\%$, we reject $H_0$. 
+
+I would recommend the organization to reevaluate their policy premium. Since we reject $H_0$, it is likely that the average claim will keep increasing. 
+
+
+#### 6. Should Mendoza Insurance charge different demographic groups different premiums?
+
+The company would like to revisit how their current premiums take into account workforce status. As of now, a customer’s workforce does not affect the premium. If different demographic groups exhibit different claims behavior, perhaps they should be charged different premiums. For instance, if the retired tend to file smaller claims than the non-retired, maybe the retired should be provided some discounts. Mendoza Insurance would like you to examine the claims data to assess the following questions: Do retirees claim lower amounts on their policy? (Hint: Make use of the retire variable in the dataset. Also, consider what would happen if the retirees’ claim amounts are lower.)
+
+a. Clearly describe your null and alternative hypotheses.
+
+-   The null hypothesis: $H_0$ : retirees' claim >= workers' claim
+-   The alternative hypothesis: $H_a$ : retirees' claim < workers' claim 
+
+
+b. Conduct hypothesis testing and report the result.
+
+```{r}
+table(insurance$retire)
+
+retire_claim <- insurance[insurance$retire == 'Yes', 'claim_amount']
+worker_claim <- insurance[insurance$retire == 'No', 'claim_amount']
+
+claim <- t.test(x = retire_claim, y = worker_claim, alternative = 'less', conf.level = .99)
+claim
+```
+
+c. Provide your recommendation based on your analysis. 
+
+Since p-value is less than $\alpha=1\%$, we can reject $H_0$. 
+
+Since we reject $H_0$, it is reasonable to think that retirees' claim are generally lower than workers' claim. We recommend giving a discount to the retirees. 
+
+
+#### 7. Have Mendoza Insurance’s efforts to catch fraud been effective?
+
+After analyzing the claim data from 2007, they ultimately determined that 9.8% of all claims in 2007 were fraudulent. However, the management team was concerned as the current manual fraudulent detection process might not be so efficient. To improve the fraudulent claim detection, the management team recommended to implement fraud detection algorithms in Mendoza’s claims processes. The recommendation was accepted and Mendoza Insurance invested heavily in implementing the new fraud detection algorithms at the end of 2007.
+
+a. The management team wants to know if their recommendation, i.e., investment in fraud detection algorithms, was effective in 2008. (Hint: Make use of the fraudulent variable.) Clearly describe your null and alternative hypotheses. For simplicity, you may assume that policy holders are no more, or less, likely to file fraudulent claims in 2008 compared to 2007. Also, you may assume that any difference in detection rate can be linked to the new detection algorithms.
+
+-   The null hypothesis: $H_0$ : fraudulent claims <= .098 
+-   The alternative hypothesis: $H_a$ : fraudulent claims > .098 
+
+b. Conduct hypothesis testing and report the result.
+
+```{r}
+table(insurance$fraudulent)
+
+fraudulent <- binom.test(x = 463, n = 4415, p = .098, alternative = 'greater', conf.level = .99)
+fraudulent
+
+```
+c. Do you believe their investments have enabled them to identify fraud significantly better? Please explain your reasoning.
+
+Since p-value is greater than $\alpha=1\%$, we cannot reject $H_0$. I believe that their investments have helped them to identify fraud better. 
+
+#### 8. Are fraudulent claim amounts higher or lower than non-fraudulent claim amounts?
+
+In other words, are fraudulent claim amounts equal to non-fraudulent claim amounts?
+
+a. Clearly describe your null and alternative hypotheses.
+
+-   The null hypothesis: $H_0$ : fraudulent claims = non-fraudulent claim
+-   The alternative hypothesis: $H_a$ : fraudulent claims != non-fraudulent claim
+
+b. Conduct hypothesis testing and report the result.
+
+```{r}
+fraud_yes <- insurance[insurance$fraudulent == 'Yes', 'claim_amount']
+fraud_no <- insurance[insurance$fraudulent == 'No', 'claim_amount']
+
+fraud_test <- t.test(fraud_yes, fraud_no, alternative = 'two.side', conf.level = .99)
+fraud_test
+```
+c. Provide your advice based on your analysis.
+
+Since p-value is greater than $\alpha=1\%$, we cannot reject $H_0$. Judging from the p-value being higher the alpha, it is highly likely that the fraudulent claim amount is similar to non-fraudulent claim amounts. 
+
+
