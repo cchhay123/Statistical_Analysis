@@ -1,0 +1,109 @@
+---
+title: "MSBR 70200: In-class Exercise Hypothesis Testing"
+author: ""
+date: ''
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<br>
+
+> For all problems, use $\alpha=1\%$.
+
+<br>
+
+* * *
+### 1. Calculate p-value using R for HT_Example.rda.
+
+It depends on what you want to test.
+
+- For mean: `t.test`
+- For proportion: `binom.test` or `prop.test`
+
+Let's compute p-value for `HT_Example.rda`.
+```{r}
+# If this RMD and HT_Example.rda are located in the same folder,
+load('HT_Example.rda')
+```
+
+The null and alternative hypotheses are $H_0: \mu=100$ and $H_a: \mu \neq 100$. As we test a mean, we can test using `t.test`.
+```{r}
+res <- t.test(x = HT_Example$value, mu = 100, alternative = 'two.sided', conf.level = 0.99)
+res
+```
+The result shows that p-value is `r res$p.value` and the 99% confidence interval is [`r res$conf.int[1:2]`].
+
+<br>
+
+Since p-value is higher than $\alpha=1\%$, we cannot reject $H_0$.
+
+<br>
+<br>
+
+* * *
+### 2. Advertising Agency
+An advertising agency has been hired by a network to determine an optimal balance of commercials for its daytime soap opera audience.
+The agency has designed a plan under the assumption that 80% of its audience are women. The agency would consider reworking its plan if the proportion of women is significantly lower than 80%. 
+
+Use `advertising` dataset after loading `advertising.rda`
+
+#### 2-1. Write your hypothesis 
+
+Either in English or in Math
+
+ * The null hypothesis:
+ * The alternative hypothesis:
+
+
+#### 2-2. Hypothesis Testing R Code and Result
+
+You can use either `prop.test` or `binom.test`. 
+
+1. Read help files for each function (highlight or block a function name and press F1). 
+2. Determine  `x`, `n`, and `p`. 
+3. Determine the proper option for `alternative`.
+
+```{r}
+# Code here
+```
+
+<br>
+
+#### 2-3. Conclusion
+
+<br>
+<br>
+
+* * *
+### 3. Diamond Price
+
+You were just told that 'fair' cut diamond price is surprisingly more expensive than the 'premium' cut diamond price in these days. You want to challenge this idea via Hypothesis Testing.
+
+#### 3-1. Write your hypothesis 
+
+Either in English or in Math
+
+ * The null hypothesis:
+ * The alternative hypothesis:
+
+#### 3-2. Hypothesis Testing R Code and Result
+
+Let's use `diamonds` dataset in `ggplot2`.
+```{r, message=F, warning=F}
+library(ggplot2)
+```
+
+To compare the means of two different samples, we can still use `t.test` like `t.test(x=one_sample, y=another_sample)`.  Write R Code with your own variables for samples with the proper option for `alternative`.
+```{r}
+# Code here
+```
+
+<br>
+
+#### 3-3. Conclusion
+
+<br>
+<br>

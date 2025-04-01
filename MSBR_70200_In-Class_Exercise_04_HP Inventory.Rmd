@@ -1,0 +1,204 @@
+---
+title: 'MSBR 70200 In-Class Exercise: Inventory Management for HP Printers'
+author: "Chamroeun Chhay"
+date: "9/10/2024"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+<br>
+
+##### HP sells its versatile PSC2310 Printer in both Switzerland and Germany. 
+Due to some local differences (i.e., ever so slightly different power plugs, warranty papers, language of user manuals etc.), its central warehouse in Schwabia stocks different SKUs for each country. *That is, printers for Switzerland cannot be sent to Germany and vice versa.*
+Monthly demands in Germany (X) and Switzerland (Y) are normally distributed with:
+
+<br>
+
+|        | Germany (X) | Switzerland (Y) |
+|:-------|:-------:|:------------------:|
+|Mean | 4200 | 420 |
+|Std. Deviation | 2200  | 200 |
+
+This information is stored in the following variables.
+
+```{r}
+# Germany (X)
+mu_X <- 4200
+sd_X <- 2200
+
+# Switzerland (Y)
+mu_Y <- 420
+sd_Y <- 200
+```
+
+Remind that R provides the following functions for a normal distribution.
+
+-	`dnorm`: probability density function (PDF)
+-	`pnorm`: cumulative distribution function (CDF)
+-	`qnorm`: quantile function
+-	`rnorm`: random normal number generating function
+
+<br>
+
+* * *
+
+
+
+#### 1. What is the probability that the demand in Switzerland exceeds 600 units in a month?
+
+ - Mathematical expression: $P(Y>600)$
+ 
+
+ - R code
+    ```{r}
+    pnorm(600, mean = mu_Y, sd = sd_Y, lower.tail = FALSE)
+    
+    # or
+    1 - pnorm(600, mean = mu_Y, sd = sd_Y, lower.tail = TRUE)
+    ```
+ 
+ - If we carry 600 printers for Switzerland, we can satisfy the demand with the probability of `r pnorm(600, mean = mu_Y, sd = sd_Y, lower.tail = TRUE)`. However, we will be out of stock with the probability of `r pnorm(600, mean = mu_Y, sd = sd_Y, lower.tail = FALSE)`.
+ 
+<br>
+<br>
+<br>
+
+#### 2. How much should HP stock each SKU for Germany and Switzerland, respectively, for one omonth if 98% of **all** demand should be satisfied? What is the total required stock level? (Assume that two demands are independent.) 
+
+ - Mathematical expression:
+ - R code
+    ```{r}
+    # required stock level for Germany (X)
+qnorm(.98, mu_X, sd_X)
+pnorm(8718.248, mu_X, sd_X, T)
+    
+    # required stock level for Switzerland (Y)
+qnorm(.98, mu_Y, sd_Y)
+pnorm(830.7498, mu_Y, sd_Y, T)
+    # total required stock level for 98%
+    # Stock level for Germany = 8719 
+    # Stock level for Switzerland = 831 
+round(qnorm(.98, mu_X, sd_X) + qnorm(.98, mu_Y, sd_Y))
+    
+    ```
+ 
+ 
+ 
+<br>
+<br>
+<br>
+ 
+ 
+#### 3.	How would the stock level in Q2 change if the final localization of the SKUs happened after an order occurs? *That is, you can work with the one SKU for both countries.* How does the answer depend on the correlation of X and Y? Answer the following questions.
+
+ 1) Assume that X and Y are perfectly positively correlated.
+  - What are the mean and the standard deviation for the single SKU?
+  <br>
+  <br>
+  - Mathematical expression for the stock level of the single SKU:
+  <br>
+  - R code
+    ```{r}
+    
+  # Germany (X)
+mu_X <- 4200
+sd_X <- 2200
+
+# Switzerland (Y)
+mu_Y <- 420
+sd_Y <- 200
+
+    # mean for the single SKU
+
+pos_meanXY <- mu_X + mu_Y
+pos_meanXY
+
+    # std dev for the single SKU
+pos_VarXY <- sd_X^2 + sd_Y^2 + 2 * sd_X * sd_Y * 1
+pos_sdXY <- sqrt(pos_VarXY)
+pos_sdXY
+    
+    # total required stock level for 98% 
+positive_required <- qnorm(.98, pos_meanXY, pos_sdXY, TRUE)
+positive_required
+    ```
+<br>
+
+ 2) Assume that X and Y are perfectly negatively correlated.
+  - What are the mean and the standard deviation for the single SKU?
+  <br>
+  <br>
+  - Mathematical expression for the stock level of the single SKU:
+  <br>
+  - R code
+    ```{r}
+    # mean for the single SKU
+    
+  # Germany (X)
+mu_X <- 4200
+sd_X <- 2200
+
+# Switzerland (Y)
+mu_Y <- 420
+sd_Y <- 200
+    
+neg_meanXY <- mu_X + mu_Y
+neg_meanXY
+  
+    # std dev for the single SKU
+  
+neg_VarXY <- sd_X^2 + sd_Y^2 + 2 * sd_X * sd_Y * (-1)
+neg_sdXY <- sqrt(neg_VarXY)
+neg_sdXY
+  
+    # total required stock level for 98% 
+negative_required <- qnorm(.98, neg_meanXY, neg_sdXY, TRUE)
+negative_required
+    
+    ```
+
+<br>
+
+
+ 3) Assume that X and Y are somewhat correlated, i.e., $Corr(X,Y)=\rho$.
+  - What are the mean and the standard deviation for the single SKU?
+  <br>
+  <br>
+  - Mathematical expression for the stock level of the single SKU:
+  <br>
+  - R code for the stock level for $\rho \in [-1,1]$.
+    ```{r}
+    rho <- seq(-1, 1, 0.1)
+    # mean for the single SKU
+
+mu_X <- 4200
+sd_X <- 2200
+
+# Switzerland (Y)
+mu_Y <- 420
+sd_Y <- 200
+    
+single_MUXY <- mu_X + mu_Y  
+
+    # std dev for the single SKU
+single_VARXY <- sd_X^2 + sd_Y^2 + 2 * sd_X * sd_Y * rho
+single_sdXY <- sqrt(single_VARXY)
+single_sdXY
+
+table_sd <- data.frame(rho, single_sdXY)
+table_sd
+
+    # total required stock level for 98% 
+    
+total_required <- qnorm(.98, single_MUXY, single_sdXY, TRUE)
+
+table_total <- data.frame(rho, total_required)
+table_total
+
+    ```
+ 
+<br>
+<br>
