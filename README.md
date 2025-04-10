@@ -17,7 +17,7 @@ This repository showcases key assignments highlighting my knowledge and practica
 - **Probability Fundamentals**: Applied concepts of probability distributions, calculations of event probabilities, and interpretation of probabilistic outcomes.
 - **Statistical Reasoning**: Developed skills to critically analyze and interpret probabilistic scenarios and outcomes within given contexts.
 
-*Goal*: Build strong foundational understanding of probability to inform statistical inference and decision-making.
+*Goal*: Build foundational understanding of probability to inform statistical inference and decision-making.
 
 ---
 
@@ -27,6 +27,6 @@ This repository showcases key assignments highlighting my knowledge and practica
 - **Standard Deviation and Variability**: Calculated and interpreted standard deviations to understand variability within data.
 - **Random Sampling and Hypothesis Testing**: Implemented random sampling methods and conducted hypothesis tests to draw reliable inferences about populations.
 
-*Goal*: Enhance analytical skills through practical application of correlation analysis, variability measurements, and robust statistical inference.
+*Goal*: Enhance analytical skills through practical application of correlation analysis, variability measurements, and statistical inference.
 
 ---
